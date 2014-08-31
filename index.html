@@ -19,7 +19,7 @@
     <script type="text/javascript" src="render.js"></script>
   </head>
   <body ng-app="main" ng-controller="main">
-    <div class="navbr navbar-default navbar-fixed-top">
+    <div class="navbr navbar-default navbar-fixed-top navbar-inverse">
       <div class="container-fluid">
         <div class="navbar-header"><a href="#" class="navbar-brand">動民主 0.49</a></div>
         <div class="collapse navbar-collapse">
@@ -27,7 +27,6 @@
             <li ng-show="!user"><a href="#" data-toggle="modal" data-target="#login-modal">登入</a></li>
             <li ng-show="user"><a href="#">{{user.email}}</a></li>
             <li ng-show="user &amp;&amp; user.email=='tkirby@gmail.com'"><a href="#" data-toggle="modal" data-target="#vote-modal">編輯投票案</a></li>
-            <li><a href="#" ng-click="slideshow()">檢視模式</a></li>
             <li ng-show="user"><a href="#" ng-click="logout()">登出</a></li>
           </ul>
         </div>
@@ -95,19 +94,29 @@
                   <input type="text" ng-model="mvote.maxvote" class="form-control">
                 </div>
               </div>
+              <div class="form-group">
+                <label class="col-sm-2 control-label"></label>
+                <div class="col-sm-9 text-left">
+                  <div class="btn btn-danger">鎖定</div>
+                </div>
+              </div>
             </form>
             <h3>選項列表</h3>
-            <h1 ng-repeat="plan in mvote.plans" class="label label-info">{{plan.name}} <i ng-click="mvote.delplan(plan)" class="glyphicon glyphicon-remove"></i></h1>
+            <div class="planlist">
+              <div ng-repeat="plan in mvote.plans" class="label label-success">{{plan.name}} <i ng-click="mvote.delplan(plan)" class="glyphicon glyphicon-remove"></i></div>
+            </div>
             <hr>
             <h4>增加選項</h4>
             <form class="form-horizontal">
               <div class="form-group">
                 <label class="col-sm-2 control-label">選項名稱</label>
-                <div class="col-sm-9">
+                <div class="col-sm-7">
                   <input type="text" ng-model="mvote.newplanname" class="form-control">
                 </div>
+                <div class="col-sm-2">
+                  <div ng-click="mvote.newplan()" class="btn btn-primary">增加</div>
+                </div>
               </div>
-              <div ng-click="mvote.newplan()" class="btn btn-primary">增加</div>
             </form>
           </div>
           <div class="modal-footer">

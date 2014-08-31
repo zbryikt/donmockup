@@ -16,17 +16,21 @@
           .form-group
             label.col-sm-2.control-label 最多票數
             .col-sm-9: input.form-control(type="text",ng-model="mvote.maxvote")
+          .form-group
+            label.col-sm-2.control-label
+            .col-sm-9.text-left: .btn.btn-danger 鎖定
         h3 選項列表
-        h1.label.label-info(ng-repeat="plan in mvote.plans")
-          | {{plan.name}} 
-          i.glyphicon.glyphicon-remove(ng-click="mvote.delplan(plan)")
+        .planlist
+          .label.label-success(ng-repeat="plan in mvote.plans")
+            | {{plan.name}} 
+            i.glyphicon.glyphicon-remove(ng-click="mvote.delplan(plan)")
         hr
         h4 增加選項
         form.form-horizontal
           .form-group
             label.col-sm-2.control-label 選項名稱
-            .col-sm-9: input.form-control(type="text",ng-model="mvote.newplanname")
-          .btn.btn-primary(ng-click="mvote.newplan()") 增加
+            .col-sm-7: input.form-control(type="text",ng-model="mvote.newplanname")
+            .col-sm-2: .btn.btn-primary(ng-click="mvote.newplan()") 增加
 
 
       .modal-footer
