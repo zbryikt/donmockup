@@ -19,10 +19,6 @@ x$.factory('render', function(){
           return it.value;
         }))
       ]).range([30, 770]);
-      console.log(d3.max(data.map(function(it){
-        return it.value;
-      })));
-      console.log(data);
       x$ = d3.select(node).selectAll('rect.bar').data(data);
       x$.exit().remove();
       y$ = x$.enter().append('rect');

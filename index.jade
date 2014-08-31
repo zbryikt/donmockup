@@ -8,7 +8,7 @@ doctype html
 html(lang="en")
   head(prefix="og: http://ogp.me/ns#")
     meta(charset="utf-8")
-    title template
+    title 動民主 0.5.1
     // libraries
     include library.jade
     // custom files
@@ -23,12 +23,12 @@ html(lang="en")
     .navbr.navbar-default.navbar-fixed-top.navbar-inverse
       .container-fluid
         .navbar-header
-          a.navbar-brand 動民主 0.49
+          a.navbar-brand 動民主 0.5.1
         .collapse.navbar-collapse
           ul.nav.navbar-nav
             li(ng-show="!user"): a(data-toggle="modal",data-target="#login-modal") 登入
             li(ng-show="user"): a {{user.email}}
-            li(ng-show="user && user.email=='tkirby@gmail.com'"): a(data-toggle="modal",data-target="#vote-modal") 編輯投票案
+            li(ng-show="user && user.uid==mvote.uid"): a(data-toggle="modal",data-target="#vote-modal") 編輯投票案
             li.dropdown
               a.dropdown-toggle(data-toggle="dropdown")
                 | 提案列表
@@ -36,6 +36,7 @@ html(lang="en")
               ul.dropdown-menu
                 li: a(ng-click="mvote.new()") 新增提案
                 li(ng-repeat="v in votelist.datasrc"): a(ng-click="mvote.load(v.$id)") {{v.name}}
+                li(ng-show="votelist.datasrc.length >= 10"): a 更多...
             li(ng-show="user"): a(ng-click="logout()") 登出
     include login.jade
     include vote.jade
@@ -66,3 +67,6 @@ html(lang="en")
             a.list-group-item.list-group-item-success(ng-repeat="plan in mvote.obj.plans")
               span.badge {{mvote.planCount(plan)}}
               | {{plan.name}}
+
+    #fb-root
+    script(src="http://connect.facebook.net/zh_TW/all.js")

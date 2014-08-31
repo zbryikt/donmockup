@@ -8,8 +8,6 @@ angular.module \main
       len = data.length
       yscale = d3.scale.linear!domain [0, len] .range [30 570]
       xscale = d3.scale.linear!domain [0, d3.max(data.map(->it.value))] .range [30 770]
-      console.log d3.max(data.map(->it.value))
-      console.log data
       d3.select(node).selectAll \rect.bar .data data
         ..exit!remove!
         ..enter!append \rect

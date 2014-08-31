@@ -1,11 +1,11 @@
 angular.module \main, <[firebase]>
-  ..controller \main, <[$scope $firebase $timeout $location render]> ++ ($scope, $firebase, $timeout, $location, render) ->
+  ..controller \main, <[$scope $firebase $timeout $location $http render]> ++ ($scope, $firebase, $timeout, $location, $http, render) ->
     $scope <<< do
       user: null
       mlogin:
         email: ""
         password: ""
-        error: {}
+        dismiss: -> $ \#login-modal .modal \hide
 
     $scope.auth = new FirebaseSimpleLogin new Firebase("https://donmockup.firebaseio.com/"), (e, u) -> $scope.$apply ->
       console.log "user login:" ,u
@@ -16,6 +16,24 @@ angular.module \main, <[firebase]>
       $scope.auth.logout!
       $scope <<< {email: "", password: "", user: null}
 
+    get-access-token = ->
+      console.log "get login status..."
+      FB.get-login-status (res) ->
+        console.log "response..."
+        if res.status == "connected" =>
+          console.log res
+          {userID,accessToken,email} = res.auth-response{userID, accessToken, email}
+          $scope.$apply ->
+            $scope.user = {uid: userID, access-token: access-token}
+          FB.api \me (me) -> 
+            $scope.$apply -> $scope.user.email = me.email
+            $scope.mlogin.dismiss!
+        else => console.log "please login"
+
+    $scope.fblogin = ->
+      FB.login (->
+        get-access-token!
+      ), {scope: "read_stream,email"}
     $scope.login = ->
       if !$scope.user =>
         $scope.auth.createUser $scope.mlogin.email, $scope.mlogin.password, (e,u) ->
@@ -49,7 +67,7 @@ angular.module \main, <[firebase]>
         else if @metix.length < ( @obj.maxvote or 1) => @metix.$add plan.id
 
       new: ->
-        @ <<< {name: '未命名', desc: '', maxvote: 1, plans: [], readonly: true}
+        @ <<< {name: '未命名', desc: '', maxvote: 1, plans: [], readonly: true, uid: $scope.user.uid}
         @add!
         $timeout (-> $(\#vote-modal).modal \show ), 0
 
@@ -57,6 +75,7 @@ angular.module \main, <[firebase]>
         db = $firebase(new Firebase "https://donmockup.firebaseio.com/vote")$asArray!
         db.$loaded!then ~>
           payload = {} <<< @{name, desc, maxvote, plans, readonly}
+          payload.uid = $scope.user.uid
           db.$add payload .then (ref) ~> 
             @id = ref.name!
             @load @id
@@ -65,7 +84,7 @@ angular.module \main, <[firebase]>
         obj = $firebase(new Firebase "https://donmockup.firebaseio.com/vote/#id")$asObject!
         obj.$loaded!then ~>
           @obj = obj
-          @ <<< @obj{name, desc, maxvote, plans, readonly}
+          @ <<< @obj{name, desc, maxvote, plans, readonly, uid}
           if !@plans => @plans = []
           @id = id
           $location.hash @id
@@ -85,6 +104,7 @@ angular.module \main, <[firebase]>
         @dismiss!
         if @obj => 
           @obj <<< @{name, desc, maxvote, plans, readonly}
+          @obj.uid = $scope.user.uid
           return @obj.$save!
         if !(@name) => return
         if !@obj => @add!
@@ -118,7 +138,6 @@ angular.module \main, <[firebase]>
     $scope.$watch 'mvote.id', -> prepare-metix!
 
     prepare-draw = ->
-      console.log $scope.mvote.plans
       payload = ($scope.mvote.plans or []).map -> 
         {value: ($scope.mvote.allballot[it.id] or 0)} <<< it{name, id}
       render.draw payload, $scope.svg
@@ -135,10 +154,17 @@ angular.module \main, <[firebase]>
 
     $scope.votelist = do
       init: ->
-        @datasrc = $firebase(new Firebase "https://donmockup.firebaseio.com/vote")$asArray!
+        @datasrc = $firebase(new Firebase "https://donmockup.firebaseio.com/vote" .limit 10)$asArray!
         @datasrc.$loaded!then ~> 
-          console.log ">>>", $location.hash!
           if !$location.hash! => id = @datasrc[parseInt(Math.random!*@datasrc.length)].$id
           else id = $location.hash!
           $scope.mvote.load id
     $scope.votelist.init!
+    FB.init do
+      appId: \836557763029341
+      status: true
+      cookie: true
+      xfbml: true
+      oauth: true
+
+    get-access-token!

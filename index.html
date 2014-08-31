@@ -2,7 +2,7 @@
 <html lang="en">
   <head prefix="og: http://ogp.me/ns#">
     <meta charset="utf-8">
-    <title>template</title>
+    <title>動民主 0.5.1</title>
     <!-- libraries-->
     <script type="text/javascript" src="assets/jquery/1.10.2/jquery.min.js"></script>
     <script type="text/javascript" src="assets/d3js/3.3.11/d3.v3.min.js"></script>
@@ -21,16 +21,17 @@
   <body ng-app="main" ng-controller="main">
     <div class="navbr navbar-default navbar-fixed-top navbar-inverse">
       <div class="container-fluid">
-        <div class="navbar-header"><a class="navbar-brand">動民主 0.49</a></div>
+        <div class="navbar-header"><a class="navbar-brand">動民主 0.5.1</a></div>
         <div class="collapse navbar-collapse">
           <ul class="nav navbar-nav">
             <li ng-show="!user"><a data-toggle="modal" data-target="#login-modal">登入</a></li>
             <li ng-show="user"><a>{{user.email}}</a></li>
-            <li ng-show="user &amp;&amp; user.email=='tkirby@gmail.com'"><a data-toggle="modal" data-target="#vote-modal">編輯投票案</a></li>
+            <li ng-show="user &amp;&amp; user.uid==mvote.uid"><a data-toggle="modal" data-target="#vote-modal">編輯投票案</a></li>
             <li class="dropdown"><a data-toggle="dropdown" class="dropdown-toggle">提案列表<span class="caret"></span></a>
               <ul class="dropdown-menu">
                 <li><a ng-click="mvote.new()">新增提案</a></li>
                 <li ng-repeat="v in votelist.datasrc"><a ng-click="mvote.load(v.$id)">{{v.name}}</a></li>
+                <li ng-show="votelist.datasrc.length &gt;= 10"><a>更多...</a></li>
               </ul>
             </li>
             <li ng-show="user"><a ng-click="logout()">登出</a></li>
@@ -164,5 +165,7 @@
         </div>
       </div>
     </div>
+    <div id="fb-root"></div>
+    <script src="http://connect.facebook.net/zh_TW/all.js"></script>
   </body>
 </html>
