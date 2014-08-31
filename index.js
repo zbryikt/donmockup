@@ -157,7 +157,7 @@ x$.controller('main', ['$scope', '$firebase', '$timeout', '$location', 'render']
     },
     save: function(){
       var ref$;
-      $('#vote-modal').modal('hide');
+      this.dismiss();
       if (this.obj) {
         ref$ = this.obj;
         ref$.name = this.name;
@@ -174,8 +174,12 @@ x$.controller('main', ['$scope', '$firebase', '$timeout', '$location', 'render']
         return this.add();
       }
     },
+    dismiss: function(){
+      return $('#vote-modal').modal('hide');
+    },
     remove: function(){
       var idx;
+      this.dismiss();
       idx = $scope.votelist.datasrc.$indexFor(this.id);
       $scope.votelist.datasrc.$remove(idx);
       $location.hash("");

@@ -82,14 +82,18 @@ angular.module \main, <[firebase]>
           @alltix.$watch update
 
       save: ->
-        $(\#vote-modal).modal(\hide)
+        @dismiss!
         if @obj => 
           @obj <<< @{name, desc, maxvote, plans, readonly}
           return @obj.$save!
         if !(@name) => return
         if !@obj => @add!
 
+      dismiss: ->
+        $(\#vote-modal).modal \hide
+
       remove: ->
+        @dismiss!
         idx = $scope.votelist.datasrc.$indexFor @id
         $scope.votelist.datasrc.$remove idx
         $location.hash ""
