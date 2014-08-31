@@ -1,5 +1,5 @@
 angular.module \main, <[firebase]>
-  ..controller \main, <[$scope $firebase render]> ++ ($scope, $firebase, render) ->
+  ..controller \main, <[$scope $firebase $timeout $location render]> ++ ($scope, $firebase, $timeout, $location, render) ->
     $scope <<< do
       user: null
       mlogin:
@@ -38,8 +38,9 @@ angular.module \main, <[firebase]>
         ret = @plans.filter(-> it.id == id)
         if ret.length => return ret.0.name
 
+      setReadOnly: (v) -> @readonly = v
       toggle: (plan) ->
-        if !@id => return
+        if !@id or @readonly => return
         if !$scope.user => return
         planid = @plans.map -> it.id
         @metix.forEach ~> if not (it.$value in planid) => @metix.$remove it
@@ -47,17 +48,27 @@ angular.module \main, <[firebase]>
         if ret.length > 0 => ret.map ~> @metix.$remove it
         else if @metix.length < ( @obj.maxvote or 1) => @metix.$add plan.id
 
+      new: ->
+        @ <<< {name: '未命名', desc: '', maxvote: 1, plans: [], readonly: true}
+        @add!
+        $timeout (-> $(\#vote-modal).modal \show ), 0
+
       add: ->
-        db = $firebase(new Firebase "https://donmockup.firebaseio.com/vote")
-        payload = {} <<< @{name,desc,plans}
-        db.$add payload
+        db = $firebase(new Firebase "https://donmockup.firebaseio.com/vote")$asArray!
+        db.$loaded!then ~>
+          payload = {} <<< @{name, desc, maxvote, plans, readonly}
+          db.$add payload .then (ref) ~> 
+            @id = ref.name!
+            @load @id
 
       load: (id) ->
-        @id = id
         obj = $firebase(new Firebase "https://donmockup.firebaseio.com/vote/#id")$asObject!
         obj.$loaded!then ~>
           @obj = obj
-          @ <<< @obj{name, desc, maxvote, plans}
+          @ <<< @obj{name, desc, maxvote, plans, readonly}
+          if !@plans => @plans = []
+          @id = id
+          $location.hash @id
         alltix = $firebase(new Firebase "https://donmockup.firebaseio.com/vote/#id/tix")$asObject!
         alltix.$loaded!then ~>
           @alltix = alltix
@@ -71,19 +82,24 @@ angular.module \main, <[firebase]>
           @alltix.$watch update
 
       save: ->
+        $(\#vote-modal).modal(\hide)
         if @obj => 
-          @obj <<< @{name, desc, maxvote, plans}
+          @obj <<< @{name, desc, maxvote, plans, readonly}
           return @obj.$save!
         if !(@name) => return
         if !@obj => @add!
-      
+
+      remove: ->
+        idx = $scope.votelist.datasrc.$indexFor @id
+        $scope.votelist.datasrc.$remove idx
+        $location.hash ""
+        $scope.votelist.init!
+
       delplan: (plan)->
         @plans.splice @plans.indexOf(plan),1
 
       newplan: ->
         @plans.push {name: @newplanname, id: new Date!getTime!}
-    $scope.mvote.load \-JVeaoPJwNWyZH9I8VRT
-
         
     prepare-metix = ->
       if !($scope.mvote.id and $scope.user and $scope.user.uid) => return
@@ -99,7 +115,7 @@ angular.module \main, <[firebase]>
 
     prepare-draw = ->
       console.log $scope.mvote.plans
-      payload = $scope.mvote.plans.map -> 
+      payload = ($scope.mvote.plans or []).map -> 
         {value: ($scope.mvote.allballot[it.id] or 0)} <<< it{name, id}
       render.draw payload, $scope.svg
 
@@ -112,3 +128,13 @@ angular.module \main, <[firebase]>
       $(svg)height h - 200
     $(window)resize resize
     resize!
+
+    $scope.votelist = do
+      init: ->
+        @datasrc = $firebase(new Firebase "https://donmockup.firebaseio.com/vote")$asArray!
+        @datasrc.$loaded!then ~> 
+          console.log ">>>", $location.hash!
+          if !$location.hash! => id = @datasrc[parseInt(Math.random!*@datasrc.length)].$id
+          else id = $location.hash!
+          $scope.mvote.load id
+    $scope.votelist.init!

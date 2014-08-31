@@ -17,18 +17,23 @@
             label.col-sm-2.control-label 最多票數
             .col-sm-9: input.form-control(type="text",ng-model="mvote.maxvote")
           .form-group
-            label.col-sm-2.control-label
-            .col-sm-9.text-left: .btn.btn-danger 鎖定
-        h3 選項列表
-        .planlist
-          .label.label-success(ng-repeat="plan in mvote.plans")
-            | {{plan.name}} 
-            i.glyphicon.glyphicon-remove(ng-click="mvote.delplan(plan)")
-        hr
-        h4 增加選項
-        form.form-horizontal
+            label.col-sm-2.control-label 投票唯讀
+            .col-sm-4.text-left
+              .btn-group
+                .btn.btn-warning(ng-class="{'active':mvote.readonly}",ng-click="mvote.setReadOnly(true)") ON
+                .btn.btn-warning.active(ng-class="{'active':!mvote.readonly}",ng-click="mvote.setReadOnly(false)") OFF
+            label.col-sm-2.control-label 刪除投票
+            .col-sm-4.text-left
+              .btn-group
+                .btn.btn-danger(ng-click="mvote.remove()") 是的，我要刪除
           .form-group
-            label.col-sm-2.control-label 選項名稱
+            label.col-sm-2.control-label 選項列表
+            .col-sm-9.planlist
+              .label.label-success(ng-repeat="plan in mvote.plans",ng-click="mvote.delplan(plan)")
+                | {{plan.name}} 
+                i.glyphicon.glyphicon-remove
+          .form-group
+            label.col-sm-2.control-label 增加選項
             .col-sm-7: input.form-control(type="text",ng-model="mvote.newplanname")
             .col-sm-2: .btn.btn-primary(ng-click="mvote.newplan()") 增加
 
