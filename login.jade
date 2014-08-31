@@ -1,0 +1,25 @@
+#login-modal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type="button",data-dismiss="modal")
+          span(aria-hidden="true") &times;
+        h4.modal-title 登入
+      .modal-body.text-center
+        .btn.btn-primary.btn-lg(ng-click="fblogin()")
+          i.fa.fa-facebook-square
+          |  使用臉書登入
+        hr
+        | 或
+        hr
+        form.form-horizontal
+          .form-group
+            label.col-sm-3.control-label 電子郵件
+            .col-sm-8: input.form-control(type="email",ng-model="mlogin.email")
+          .form-group
+            label.col-sm-3.control-label 密碼
+            .col-sm-8: input.form-control(type="password",ng-model="mlogin.password")
+          .form
+            .btn.btn-success.btn-lg(ng-click="login()") 登入
+      .modal-footer
+        button.btn.btn-default(type="button",data-dismiss="modal") 取消

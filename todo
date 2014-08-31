@@ -1,0 +1,13 @@
+root
+  vote
+    plan
+      :id
+        name
+        desc
+    ballot
+      :user
+        [id]
+    discuss
+      :id
+        author
+        comment

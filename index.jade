@@ -1,0 +1,62 @@
+doctype html
+//- basic libraries: jquery(1.10.2), d3js(3.3.11), angularjs(1.2.3), bootstrap(3.0)/semantic-ui(0.9.3/0.9.5)
+- var usecdn = false
+- var useog = false
+- var lib = { jquery: true, d3js: true, angular: true, bootstrap: true, semantic: false }
+- var assets = "assets"
+- var thumbnail = "http://dummy.thumbnail"
+html(lang="en")
+  head(prefix="og: http://ogp.me/ns#")
+    meta(charset="utf-8")
+    title template
+    // libraries
+    include library.jade
+    // custom files
+    link(rel="stylesheet",type="text/css",href="index.css")
+    link(rel="stylesheet",type="text/css",href="/assets/fontawesome/css/font-awesome.min.css")
+    script(type="text/javascript",src="//cdn.firebase.com/js/client/1.0.21/firebase.js")
+    script(type="text/javascript",src="//cdn.firebase.com/js/simple-login/1.6.3/firebase-simple-login.js")
+    script(type="text/javascript",src="//cdn.firebase.com/libs/angularfire/0.8.2/angularfire.min.js")
+    script(type="text/javascript",src="index.js")
+    script(type="text/javascript",src="render.js")
+  body(ng-app="main",ng-controller="main")
+    .navbr.navbar-default.navbar-fixed-top
+      .container-fluid
+        .navbar-header
+          a.navbar-brand(href="#") 動民主 0.49
+        .collapse.navbar-collapse
+          ul.nav.navbar-nav
+            li(ng-show="!user"): a(href="#",data-toggle="modal",data-target="#login-modal") 登入
+            li(ng-show="user"): a(href="#") {{user.email}}
+            li(ng-show="user && user.email=='tkirby@gmail.com'"): a(href="#",data-toggle="modal",data-target="#vote-modal") 編輯投票案
+            li: a(href="#",ng-click="slideshow()") 檢視模式
+            li(ng-show="user"): a(href="#",ng-click="logout()") 登出
+    include login.jade
+    include vote.jade
+    #content
+      svg#svg(viewBox="0 0 800 600",preserveAspectRatio="xMidYMid")
+      .text-center
+        h2
+          | {{mvote.obj.name}}
+          |  
+          small: small 每人 {{mvote.obj.maxvote}} 票
+        p {{mvote.obj.desc}}
+
+      hr
+      .row
+        .col-sm-4
+          h3.text-center 所有選項
+          .list-group
+            a.list-group-item(href="#",ng-repeat="plan in mvote.obj.plans",ng-click="mvote.toggle(plan)")
+              | {{plan.name}}
+        .col-sm-4
+          h3.text-center 你的選擇
+          .list-group
+            a.list-group-item.list-group-item-success(href="#",ng-repeat="b in mvote.ballot")
+              | {{mvote.planById(b)}}
+        .col-sm-4
+          h3.text-center 大家的選擇
+          .list-group
+            a.list-group-item.list-group-item-success(href="#",ng-repeat="plan in mvote.obj.plans")
+              span.badge {{mvote.planCount(plan)}}
+              | {{plan.name}}

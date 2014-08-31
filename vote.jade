@@ -1,0 +1,35 @@
+#vote-modal.modal.fade
+  .modal-dialog
+    .modal-content
+      .modal-header
+        button.close(type="button",data-dismiss="modal")
+          span(aria-hidden="true") &times;
+        h4.modal-title 編輯投票案
+      .modal-body.text-center
+        form.form-horizontal
+          .form-group
+            label.col-sm-2.control-label 投票名稱
+            .col-sm-9: input.form-control(type="text",ng-model="mvote.name")
+          .form-group
+            label.col-sm-2.control-label 投票描述
+            .col-sm-9: input.form-control(type="text",ng-model="mvote.desc")
+          .form-group
+            label.col-sm-2.control-label 最多票數
+            .col-sm-9: input.form-control(type="text",ng-model="mvote.maxvote")
+        h3 選項列表
+        h1.label.label-info(ng-repeat="plan in mvote.plans")
+          | {{plan.name}} 
+          i.glyphicon.glyphicon-remove(ng-click="mvote.delplan(plan)")
+        hr
+        h4 增加選項
+        form.form-horizontal
+          .form-group
+            label.col-sm-2.control-label 選項名稱
+            .col-sm-9: input.form-control(type="text",ng-model="mvote.newplanname")
+          .btn.btn-primary(ng-click="mvote.newplan()") 增加
+
+
+      .modal-footer
+        button.btn.btn-primary(type="button",ng-click="mvote.save()") 儲存
+        button.btn.btn-default(type="button",data-dismiss="modal") 取消
+
